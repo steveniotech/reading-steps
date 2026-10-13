@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Reading Steps</title><link rel="stylesheet" href="styles.css"><script defer src="lessons.js"></script><script defer src="rewards.js"></script><script defer src="app.js"></script></head>
+<body>
+<header><div class="brand">Reading Steps <span>One idea at a time.</span></div><div class="points-line"><span id="practice-points">Practice Points: 0</span><div id="celebration" aria-hidden="true"></div></div></header>
+<main>
+<details id="teacher-settings" class="settings"><summary>Teacher Settings</summary>
+<p class="quiet">These settings organize practice. They are not access controls.</p><p class="quiet">Points and badges reset when you refresh or start a new practice.</p>
+<div class="toolbar"><label>Passage<select id="lesson"></select></label><label>Practice mode<select id="mode"><option value="guided">Guided Practice</option><option value="independent">Independent Practice</option><option value="teacher">Teacher Model</option></select></label><button id="clear">Clear This Practice</button><button id="skip">Skip Current Task</button></div>
+<p id="notice" role="status" aria-live="polite"></p>
+<nav id="steps" aria-label="Choose a main step"></nav>
+<div id="teacher-status"></div>
+<details id="teacher-reference"><summary>Teacher Reference</summary><p>This is one example. Your words can be different.</p><div id="reference-content"></div></details>
+</details>
+<div class="workspace">
+<details id="reading-panel" class="reading" open><summary>Read Passage</summary><section aria-labelledby="passage-title"><div class="eyebrow" id="kind"></div><h1 id="passage-title" tabindex="-1"></h1><div class="read-controls"><button id="view">Show One Sentence</button><label>Text size<select id="size"><option value="20">Comfortable</option><option value="24">Larger</option><option value="28">Largest</option></select></label></div><p id="evidence-selection" role="status" aria-live="polite" hidden></p><div id="passage"></div><div id="sentence-controls" hidden><button id="prev-sentence">Previous Sentence</button><span id="position" aria-live="polite"></span><button id="next-sentence">Next Sentence</button></div><details id="close-reading"><summary>Look Closely at This Sentence</summary><div id="close-content"></div></details><button id="return-task" class="subtle mobile-only">Back to Task</button></section></details>
+<section class="task-card" aria-labelledby="task-title"><div id="task"></div><div class="secondary-actions"><button id="back" class="subtle">Back</button><button id="open-passage" class="subtle">Read Passage</button></div></section>
+</div>
+<footer>A reading practice tool. Work with your teacher when you need help.</footer>
+</main></body></html>
