@@ -2,6 +2,23 @@
 
 面向纽约州三年级孩子的英文阅读训练教学辅助原型。学生页面全部使用美式英文；开发说明为中文。使用 WHAT → WHY → HOW 组织理解，再进行简短复述。Who、Where、When 只是 What 的可选辅助提示，这是一种教学组织方式，不是对词义的等同解释。
 
+## Python Steps Lab
+
+An independent Python playground for first-time coders aged 10–12. Open **`python-steps.html`** directly, follow **Try Python Steps Lab** from Reading Steps, or use Live Server / the static-server command below and open `/python-steps.html`. No build, installation, account, or API key is needed.
+
+- Follow **Learn → Type → Run → Fix → Build** through 29 tasks across five units and two projects. The map unlocks each stop in order. Type real Python, use **Run Code**, then **Check**. A three-level hint ladder never deducts stars.
+- **Python’s first load requires internet**: a pinned Pyodide runtime loads from its official documented distribution at jsDelivr. Code then runs locally in a terminable worker; student code, replies, and progress are not sent to a server. No external UI libraries, audio, fonts, packages, or analytics load. See [Pyodide’s loading documentation](https://pyodide.org/en/0.28.0/usage/index.html).
+- If loading fails, lessons, drafts, hints, and JavaScript structure checks remain available. Offline checks are explicitly provisional: they do not invent output or award completion stars. Use **Try Loading Python**, then Check after a successful real run.
+- **Test Inputs** gives `input()` its next reply and shows both questions and answers in Output. Robot Interview uses a name and animal. Guess the Number’s **Run Code** uses a random secret; **Check Project** uses secret 12 with the default replies `5, 17, 12`. Add or remove replies to test other paths. **Add Replies 1–20** appends a full set of guesses for a random-run test.
+- Drafts, current step, completion counts, stars, badges, test replies, hint usage, latest error type, and finished output are saved in this browser’s **localStorage**, key `python-steps-lab:v1`. Refresh restores them. File URLs and different localhost ports may have separate storage. Browser privacy settings may block saving; the page then explains how to export your work. Reading Steps keeps its existing in-memory policy.
+- Use **Teacher View** (also `python-steps.html#teacher`) to inspect progress, preview any task without rewards, or **Export JSON**. **Reset Progress** requires two confirmations and clears only Python Lab progress. **Reset Code** confirms replacement of the current draft and keeps earned stars. Use nicknames; shared devices retain drafts until reset.
+- Ordinary steps award 5 stars, challenges 10, Robot Interview 20, Guess the Number 30, once per task: **210 stars and 7 badges** in this edition. Bonus ideas are optional, with no extra stars in version 1. Hints, mistakes, and retries never subtract stars. Successful repeated checks are counted but never scored twice.
+- Keyboard: Tab in the editor inserts four spaces; Escape leaves it. Ctrl/Cmd+Enter runs; Ctrl/Cmd+S confirms automatic saving. All controls have visible focus. Reduced motion keeps the completion card and disables its brief star animation.
+
+The runner permits print, basic values, input simulation, arithmetic, decisions, loops, functions, lists, and a constrained random module. It rejects file/network/system/package tools, introspection, unsupported syntax, and oversized operations. Line/output limits and a worker timeout stop runaway loops. This is a restricted educational subset, **not a general Python IDE or a hardened hostile-code service**. Some task output words are part of explicit checklists; creative open-ended meanings still need a teacher’s review. Turtle is Coming Soon.
+
+Files: `python-steps.html`, `python-steps.css`, `python-steps.js`, `python-lessons.js`, `python-core.js`, `python-runner.js`, and `test-python.js`. Run `node test-python.js` with local `python3` for curriculum, checker, safety, persistence, and worker-lifecycle tests. See **TESTING.md** for actual browser results and remaining manual checks.
+
 ## 本地运行
 
 当前环境已确认存在 `python3`。在终端运行：

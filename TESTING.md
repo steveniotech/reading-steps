@@ -1,6 +1,89 @@
 # 测试与质量检查
 
-## 本次实际执行
+## Python Steps Lab — implementation and verification
+
+Python Lab is a separate static page. Only a local navigation link was added to Reading Steps for this feature; its lessons, state, privacy, scoring, sound, and celebration behavior are retained. No dependencies were installed and no backend was added.
+
+### Automated checks actually passed
+
+```sh
+node --check python-lessons.js
+node --check python-core.js
+node --check python-runner.js
+node --check python-steps.js
+node --check test-python.js
+node test-python.js
+node test-state.js
+node validate.js
+git diff --check
+```
+
+`test-python.js` runs the exact Python host shipped to the browser under local CPython. All **29 reference programs** run and meet their task rules. It covers decision boundaries (including heights 119, 120, 200, 201), changing Robot Interview replies, Guess the Number with a fixed check secret, functions/lists/f-strings, numeric vs text values, loop stopping, seven friendly error categories, denied modules/calls/introspection, bounded operations, one-time stars, 210-star cap, seven badges, lock order, and normalized draft/input/hint restoration. Negative examples cannot pass by printing a matching number while leaving the requested variable unused.
+
+Worker substitutes cover loading, unavailable execution, ready messages, termination, stale responses, the 6-second run timeout, 45-second load failure, retries, and timer cleanup. A DOM substitute drives the **real app handlers** through all 29 tasks: project build checkpoints, navigation, challenge/project completion pages, saved stars/badges/outputs, hint ladder, repeated Check, concurrent edits during a run, shortcut saving, Teacher View, and double-confirmed reset. These adapter tests are **not real-browser, Pyodide, audio, or assistive-technology tests**.
+
+The existing Reading Steps state tests and data/privacy checks also passed. Python Lab alone has a separate localStorage key and downloads the Python runtime; Reading Steps continues to load only its own local files and keep student answers in memory.
+
+### Real browser checks actually performed
+
+Tested in **Google Chrome by opening `python-steps.html` directly as a file URL**, without a server or build:
+
+| Path | Observed result |
+| --- | --- |
+| Unit 1 Step 1 | Pyodide loaded; Run printed `Hello, world!`; Check awarded 5 stars and enabled Next Step. |
+| Unit 1 Step 2 | Typed a new message; Check ran it and awarded the next 5 stars. |
+| Unit 1 Step 3 | Broken starter produced the quotation-mark explanation with raw details collapsed. Fixed code ran and passed. |
+| Unit 1 Step 4 / Challenge | Three real print lines passed; the poster challenge showed its finished output, +10 stars, and Message Maker. Map showed 5/5, 30 stars, and Unit 2 unlocked. |
+| Refresh | Current step, edited code, stars, completion, badge, and a used hint were restored. Teacher View retained the previous SyntaxError. |
+| Unit 2 variables / Text vs Number | In Teacher preview, numeric score code printed 15 and passed. A final smoke check of the latest scripts printed a stored name and passed its variable-use check. |
+| Robot Interview | In Teacher preview, sequential build checkpoints unlocked; Test Inputs supplied Sky/otter; Output showed questions, replies, and personalized responses. Final Check passed, including an alternate-name/animal test. |
+| Unit 4 even/odd | In Teacher preview, int/input/if/else program ran and passed its 4/5 test cases. |
+| Unit 5 for / while | In Teacher preview, range(5) printed exactly five messages; a while counter printed 1, 2, 3 and stopped. |
+| Runaway while repair | Unchanged starter was stopped and showed “Your loop may not have a way to stop…”. Adding the counter update printed 1–5 and passed. |
+| Guess the Number Check | In Teacher preview, Test Inputs 5, 17, 12 produced Too low!, Too high!, Correct!, You won!, then terminated and passed. |
+| Guess the Number Run | Random mode differed from the fixed Check secret. Exhausted replies produced a friendly request for another Test Input. Appending replies 1–20 completed a real random game (observed secret 8). |
+| Keyboard | Tab inserted four spaces and kept editor focus; Escape moved to Check; Cmd+Enter ran; Cmd+S displayed “Your work is saved automatically.” |
+| Layout | At the tested window’s 75% zoom the lab used readable side-by-side cards; at 100% it stacked them. Screenshots inspected map, guide, input rows, editor, output, and completion layout. Physical phone testing was not performed. |
+| Reading Steps regression | Original HTML opened, Sound was Off, Continue opened the original question, and a first correct Check still added 10 Practice Points with the original feedback. |
+
+Later-unit browser checks used Teacher preview to avoid fabricating learner completion or bypassing the map locks. Their stars, badges, and project completion rewards were verified through actual app handlers with DOM/CPython adapters, not through a full real-browser 29-step learner route. The 30 test stars and preview drafts were cleared on 2026-10-13 as recorded below; they are not student learning records.
+
+### Test-data cleanup — real Chrome verification, 2026-10-13
+
+At the user's explicit request, used the existing Python Lab Teacher View → Reset Progress and accepted both confirmations. Only the test data under `python-steps-lab:v1` was replaced with a fresh Python Lab state. The reset implementation writes this single key; it does not call `localStorage.clear()`, touch other keys, or reset Reading Steps. No course content, app code, or reward rules changed during cleanup.
+
+Observed immediately after reset **and again after a real Chrome page refresh**:
+
+- **0 stars**, **0 / 29 steps complete**, and no earned badges.
+- Unit 1 / Make Python Talk: **Unlocked**, 0 / 5 complete, enabled start button.
+- Unit 2, Unit 3, Project 1, Unit 4, Unit 5, Project 2: **Locked**, zero completion, disabled start buttons in the existing learning order.
+
+The page was left on this fresh learning map. No Run or Check was performed after cleanup, so no new test rewards were created.
+
+### Coverage boundaries — automated / browser-tested / not yet browser-tested
+
+| Category | Evidence and scope |
+| --- | --- |
+| Automated coverage | Prior `test-python.js` CPython/core, DOM-handler, and Worker-substitute checks cover all 29 tasks, reward/lock rules, persistence, error handling, and reset logic. These are not full browser runs. Prior Reading Steps tests also passed. They were not rerun for this documentation-only cleanup. |
+| Real browser coverage | Chrome file-URL checks listed above; additionally, the two-confirmation reset, fresh-state map, and persistence of that initial state after refresh were verified on 2026-10-13. |
+| Not yet tested in a real browser | Full 29-task learner route and all later-unit reward paths; forced offline/load failure and network inspection; storage-denied/quota conditions; physical mobile devices; comprehensive screen-reader and reduced-motion checks; Live Server/static-server mode and browsers other than Chrome. Some of these have automated substitute coverage, not real-browser verification. |
+
+### Remaining manual checks / exact retest instructions
+
+1. Open the HTML or `/python-steps.html` through Live Server. For a clean learner route, export any existing work, then use Teacher View → Reset Progress and accept both confirmations. Verify 0 stars, only Unit 1 unlocked, and no badges.
+2. Run and Check the first print; change a message; run the broken quotes starter, then fix it; finish the remaining tasks. Next Step stays disabled until Check passes. Challenges display a completion page and new badge. Repeat a completed Check and verify stars do not increase.
+3. For quick teacher testing, open `#teacher` and preview the requested task. Hint 1 and Hint 2 precede Show Example; reference code is labeled “Use this to learn, then try typing it yourself.” Type it in the editor. For projects, press Check Build Step after each part, then Run / Check Project. Preview never awards stars or completion.
+4. Robot Interview: use Name `Sky` and Animal `otter`; run, inspect the questions/replies, and Check. Change them to another nickname and animal and rerun. Guess the Number: use `5, 17, 12` for Check. For random Run, add replies 1–20. Test empty/non-numeric input and an incomplete loop; errors never deduct stars.
+5. Park checker: try height inputs 119, 120, 200, 201. Put `> 200` before `>= 120`. Its Check also runs these boundaries. Test both branches of even/odd, the three score branches, for ranges, and a repaired while counter.
+6. Refresh after editing and using hints; verify current learner step, draft, Test Inputs, completed tasks, stars, badges, hint usage, and saved output in Teacher View / Export JSON. Try Reset Code and cancel first; accepting replaces only that draft. Reset Progress must require two confirmations and affect only Python Lab.
+7. **Offline / runtime failure remains a manual browser check**: use DevTools Network Offline, disable cache, and reload. After the loading limit, verify the exact runner failure message, editable drafts and hints, and provisional Check feedback with no invented output or awarded stars. Restore network and Try Loading Python. Network should show only runtime distribution loads, not student-code uploads or package installs.
+8. **Storage-denied/quota, true mobile, and full screen-reader behavior remain manual**: block storage and confirm a save warning plus usable editing/export; test approximately 375px width and 200% text; Tab through controls, use Escape from the editor, and check output announcements with VoiceOver/NVDA. Try reduced motion: the finished card remains, but the brief star animation stops/does not start. These behaviors were implemented; they were not all verified on real devices.
+
+Version 1 intentionally has no extra bonus stars, Turtle canvas, runtime package installation, live pause-and-resume input dialogue, JSON import, cloud sync, or general Python support. Checks combine AST/runtime metadata, output, and a small set of examples; they cannot understand every creative message or prove arbitrary program correctness. Text describing personal details or positive messages still benefits from a teacher’s review. Supported expression formats are documented in README.
+
+## Reading Steps — prior check records
+
+以下保留既有 Reading Steps 的检查记录；Python Steps Lab 的新增检查与限制见上节。
 
 功能修改前已核对当前项目目录正确，阅读了现有HTML、CSS、JavaScript、文章数据、状态测试和中文文档。项目内没有AGENTS.md。未安装依赖、启动后台服务、访问外部网站或部署。四篇文章、问题、答案、解释和内部句子ID保留，`lessons.js` 没有修改。
 
@@ -136,3 +219,41 @@ python3 -m http.server 8000 --bind 127.0.0.1
 ## 质量边界
 
 自动检查只验证数据及预先编写的代码规则；不验证阅读能力、教学效果、课程标准或Lexile。四篇文章仍需教师审核；新的分屏界面仍需真实浏览器验收。
+
+
+## 彩带可见性修复（2026-10-12）
+
+静态检查发现原容器在非固定的 header 中；反馈会聚焦任务标题，滚动后彩带可能留在屏幕外。原粒子仅 5×8px、下落 18px，进一步降低可见性。首次 +10 的调用链本身正常。现容器是 body 的唯一 `#celebration`，固定在视口右上方，160×64px、z-index:100，无背景；粒子 7×11px、下落 44px，CSS 动画 1 秒，1100ms 兜底清理。容器及粒子不接收指针，不占布局、不接收焦点；父元素无 overflow:hidden 或 transform 裁切，容器自身裁切边界容纳粒子轨迹。
+
+本次实际通过 `node test-state.js`、`node validate.js` 和全部 JavaScript 的 `node --check`，以及 `git diff --check`。状态测试直接包装真实 `celebrations.play()`：首次奖励调用一次并创建九个粒子，重复检查不再调用；Teacher Model 和教师跳过不调用。既有测试继续覆盖答案披露、积分上限、徽章、减少动态及旧回调清理。
+
+本次没有运行真实浏览器视觉测试。DOM/定时器替身不能确认真实绘制、滚动、遮挡或设备的动态偏好；视觉动画仍需人工验证。浏览器内执行以下步骤：
+
+1. 打开项目的 `index.html`，刷新。开发者工具 Console 执行 `document.querySelectorAll('#celebration').length`，应为 1；执行 `matchMedia('(prefers-reduced-motion: reduce)').matches` 查看实际偏好。
+2. 正常动态测试：在浏览器开发者工具 Rendering 中将 prefers-reduced-motion 模拟为 `no-preference`（或关闭系统减少动态），选择 A Sign for the Garden / Guided Practice，Clear This Practice 并确认。
+3. 点击开始阅读后的主按钮，进入 What 题。选择 “Maya used a sign to help protect a new garden.”，先把页面滚到头部离开视口，再点击 Check。应获得 10 分，反馈显示 “Nice work! +10 points”，视口右上方九个彩带短暂下落，约 1 秒消失。也用约 375px 宽的手机视口重复测试。
+4. 点击 Back，再次 Check 同一正确答案：仍为 10 分，无新彩带。首次检查时用键盘操作，确认焦点仍在任务标题，随后 Tab 能正常移动；动画期间按钮仍可点击，内容无跳动。
+5. Clear This Practice 后，先选错误答案并 Check，经提示中的 More Help / 示例入口查看对应答案，再回题选正确答案检查：对应任务不加分、无彩带。另行测试 Teacher Model，以及 Teacher Settings → Skip Current Task，均不因该操作加分或播放彩带。完成徽章的既有独立庆祝规则保留。
+6. 模拟 `reduce`，清空后重复步骤 3：仍加 10 分，静态 “Nice work! +10 points” 清楚出现，无彩带。这是预期行为，不应强制播放动画。恢复 `no-preference` 后检查另一项尚未奖励的任务，应可播放；同一已奖励任务不会补播。
+
+
+## 奖励呈现升级（2026-10-12，取代上节的尺寸和时长）
+
+当前彩带为 24 个 10×16px 粒子、四种柔和颜色，固定在视口右上方 224×72px 范围，CSS 动画 2 秒、2100ms 兜底清理。彩带不占布局、不接收指针、不接收焦点、不推进步骤。根据当前问题、答案、按钮和文章的屏幕矩形裁切彩带，滚动和调整窗口时重新计算，避免粒子覆盖阅读内容；空间不足时可见粒子会减少。动画结束、清空、切换文章或模式时清理粒子、动画监听、临时滚动/resize 监听与定时器。
+
+新增真正的按钮 `Sound: Off` / `Sound: On`，同步 aria-pressed，沿用可见键盘焦点样式。默认关闭；仅明确点击打开后创建/解锁 AudioContext，开关本身无声音。用本地正弦波、低音量和渐入渐出合成音效：单题约 0.29 秒、徽章约 0.58 秒。无音频文件、网络、存储、录音或麦克风权限。播放结束释放节点和 ended 监听；关闭、清空、切换文章和模式时停止节点、关闭 context，恢复 Off；待完成的 resume 回调不能在重置后播放。
+
+声音仅用于开启之后的首次独立奖励；答错、提示、示例、重试答对、跳过后回题和重复检查保持静音。重试仍按原规则获得积分和彩带。徽章声音仅在六项均独立获分且未披露/跳过时播放一次；其他路径仍按原规则获得徽章和原有视觉庆祝。Teacher Model 无奖励声音。减少动态仅禁止视觉动画，不影响已开启的声音、静态奖励文字、积分或徽章。
+
+本次实际检查：`node test-state.js`、`node validate.js`、五个 JavaScript 文件的 `node --check`、`git diff --check`。新增状态检查包括首次/重复庆祝、24 粒子及清理时限、裁切几何、默认静音、明确开启、单题/徽章一次性音效、错误/重试/示例/跳过/Teacher Model 静音、减少动态、节点和监听清理、API 缺失、构造/节点/启动异常、resume Promise 拒绝及重置后的迟到回调。测试使用 DOM、定时器和 Web Audio 替身，**未进行真实浏览器动画或听音测试**。
+
+### 手动验证
+
+1. 打开 `index.html` 并刷新，确认 `Sound: Off`。设置花园文章 / Guided Practice，系统或 DevTools Rendering 的 prefers-reduced-motion 为 no-preference。开始 What 题，选 “Maya used a sign to help protect a new garden.”，点击 Check：加 10 分、静态成功文字可见、右上彩带约 2 秒，无声音；没有自动进入下一题。Back 后再次 Check 无新增庆祝或分数。
+2. 分别在桌面、375px 手机视口和放大文字下测试。将头部滚出视口后答题，动画中继续滚动/调整窗口，确认粒子清楚且不覆盖问题、答案、主要按钮或左侧文章；按钮可点击、内容不跳动。空间不足时局部粒子应被裁切。
+3. 清空后用 Tab 聚焦 Sound 按钮，确认明显焦点；用 Space 或 Enter 开启，确认文字 On 和 aria-pressed=true，开启动作不响。首次正确 Check 应有轻柔短提示音；选择答案、答错、提示、示例和重复检查无声音。答错后重试正确仍按原规则加分，但不响。关闭后后续奖励不响。
+4. 清空、重新开启声音，独立完成六项答案/证据任务、提交自己的复述并确认自查：首次徽章有不超过 0.8 秒的短音效；返回自查再确认不重复播放。分别用 Teacher Model、跳过和答案示例路径完成，确认无对应成功音效，徽章资格保持原规则。
+5. 将 prefers-reduced-motion 改为 reduce，清空后首次独立答对：无彩带，仍显示 “Nice work! +10 points” 并加 10 分；完成时徽章仍可见。声音若明确开启仍可播放。动画期间切为 reduce 应立即终止彩带。
+6. 将浏览器标签页/站点静音，或阻止声音播放，再开启 Sound 并获得奖励：可无声音，不应出现错误或影响分数、状态、徽章。解除静音后检查另一项尚未奖励的任务；已奖励任务不会补播。开发者工具可观察浏览器是否让 AudioContext 保持 suspended。
+7. 声音 On 且正在庆祝时，Clear This Practice 并确认，或切换文章并确认：立即停止残留效果，按钮恢复 Off。下一次奖励只显示视觉庆祝；刷新也恢复 Off。切换模式同样停止残留并关闭声音；取消清空/文章切换确认则保留当前练习。
+8. Network 面板确认音效不加载任何音频资源；页面不请求麦克风权限。控制台检查无未处理的音频错误。听感、浏览器权限行为及真实视觉遮挡需人工确认，状态测试不代表这些项目已通过。

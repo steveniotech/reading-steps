@@ -18,19 +18,20 @@ const freshQuestion = () => ({rewards:{answer:freshReward(),evidence:freshReward
 const freshState = () => ({what:freshQuestion(),why:freshQuestion(),how:freshQuestion(),points:0,retellSubmitted:false,retellMethod:null,selfCheckConfirmed:false,badgeEarned:false,completionCelebrated:false,retell:'',checks:[],closeAbout:'',closeTells:''});
 let state=freshState(), rewardNotice=null;
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-const celebrations=createCelebrationController($('celebration'),reducedMotion);
+const celebrations=createCelebrationController($('celebration'),reducedMotion,{document,window});
+const rewardSound=createRewardSoundController($('sound-toggle'),window);
 function markRevealed(key,tasks){
  if(mode==='teacher')return;
  tasks.forEach(task=>{state[key].rewards[task].revealed=true;if(task==='answer')state[key].example=true;else state[key].evidenceExample=true;});
 }
-function awardTask(key,task){
+function awardTask(key,task,firstAttempt=true){
  const reward=state[key].rewards[task];
  if(mode==='teacher')return null;
  reward.done=true;
  if(reward.awarded)return null;
  if(reward.revealed)return {key,task,added:false,text:'You worked through this step. Keep going!'};
  reward.awarded=true;state.points+=10;
- return {key,task,added:true,text:'Nice work! +10 points'};
+ return {key,task,added:true,soundEligible:firstAttempt&&!reward.skipped,text:'Nice work! +10 points'};
 }
 function feedbackReward(key,task){
  if(!rewardNotice||rewardNotice.key!==key||rewardNotice.task!==task)return '';
@@ -57,7 +58,7 @@ function hasWork(){return state.points||state.retellSubmitted||state.selfCheckCo
 function status(key){const s=state[key];if(s.example||s.evidenceExample)return 'Example viewed · With help';if(s.skipped)return 'Skipped · Not completed independently';if(s.correct&&s.evidenceCorrect)return 'Completed independently';if(s.attempted||s.evidenceAttempted||s.choice||s.selected.length)return 'In progress';return 'Not checked';}
 function focusTask(){$('task-title').focus();}
 function resetHelp(){helpLevel=0;overlay=null;rewardNotice=null;}
-function show(next,notice=null){position=Math.max(0,Math.min(FLOW.length-1,next));resetHelp();rewardNotice=notice;renderAll();focusTask();if(notice?.added)celebrations.play();}
+function show(next,notice=null){position=Math.max(0,Math.min(FLOW.length-1,next));resetHelp();rewardNotice=notice;renderAll();focusTask();if(notice?.added){celebrations.play();if(notice.soundEligible&&rewardSound.enabled)rewardSound.play('task');}}
 function renderSettings(){
  $('steps').innerHTML=names.map((name,stage)=>`<button data-stage="${stage}" ${current().stage===stage?'aria-current="step"':''}>${e(name)}</button>`).join('');
  $('steps').querySelectorAll('[data-stage]').forEach(button=>button.onclick=()=>{show(FLOW.findIndex(screen=>screen.stage===Number(button.dataset.stage)));$('teacher-settings').open=false;});
@@ -151,13 +152,13 @@ function handlePrimary(){
  if(mode==='teacher'&&screen.key){show(position+1);return;}
  if(screen.phase==='answer'){
   if(!s.choice){$('inline-message').textContent='Choose an answer first.';return;}
-  s.attempted=true;s.correct=s.choice===q.answerId;s.feedback=shortFeedback(q.options.find(option=>option.id===s.choice).feedback);show(position+1,s.correct?awardTask(screen.key,'answer'):null);
+  const firstAttempt=!s.attempted;s.attempted=true;s.correct=s.choice===q.answerId;s.feedback=shortFeedback(q.options.find(option=>option.id===s.choice).feedback);show(position+1,s.correct?awardTask(screen.key,'answer',firstAttempt):null);
  }else if(screen.phase==='answer-feedback'){show(position+(s.correct?1:-1));}
  else if(screen.phase==='evidence'){
   if(!s.selected.length){$('inline-message').textContent='Choose a sentence in the passage first.';return;}
-  s.evidenceAttempted=true;const unrelated=s.selected.some(id=>!q.evidenceIds.includes(id)),missing=q.evidenceIds.some(id=>!s.selected.includes(id));
+  const firstAttempt=!s.evidenceAttempted;s.evidenceAttempted=true;const unrelated=s.selected.some(id=>!q.evidenceIds.includes(id)),missing=q.evidenceIds.some(id=>!s.selected.includes(id));
   s.evidenceCorrect=!unrelated&&!missing;
-  s.evidenceFeedback=s.evidenceCorrect?'These sentences give direct support for this question.':`${unrelated?'Some selected sentences do not directly support this answer. ':''}${missing?'Some supporting sentences are still missing.':''}`.trim();show(position+1,s.evidenceCorrect?awardTask(screen.key,'evidence'):null);
+  s.evidenceFeedback=s.evidenceCorrect?'These sentences give direct support for this question.':`${unrelated?'Some selected sentences do not directly support this answer. ':''}${missing?'Some supporting sentences are still missing.':''}`.trim();show(position+1,s.evidenceCorrect?awardTask(screen.key,'evidence',firstAttempt):null);
  }else if(screen.phase==='evidence-feedback'){show(position+(s.evidenceCorrect?1:-1));}
  else if(screen.phase==='retell'&&mode!=='teacher'){
   if(state.retellSubmitted&&state.retellMethod==='aloud'){show(position+1);return;}
@@ -166,13 +167,13 @@ function handlePrimary(){
  }else if(screen.phase==='self-check'&&mode!=='teacher'){
   if(!state.retellSubmitted){$('inline-message').textContent='Submit your retelling first, or confirm you told it aloud.';return;}
   state.selfCheckConfirmed=true;const earned=finishBadge();show(position+1);
-  if(earned&&!state.completionCelebrated){state.completionCelebrated=true;celebrations.play();}
+  if(earned&&!state.completionCelebrated){state.completionCelebrated=true;celebrations.play();if(rewardSound.enabled&&keys.every(key=>['answer','evidence'].every(task=>{const reward=state[key].rewards[task];return reward.awarded&&!reward.revealed&&!reward.skipped;})))rewardSound.play('badge');}
  }else if(screen.phase==='complete'){show(FLOW.findIndex(item=>item.phase==='retell'));}
  else show(position+1);
 }
 function renderAll(){$('practice-points').textContent=`Practice Points: ${state.points}`;renderSettings();renderPassage();renderTask();}
 function hideReference(){$('teacher-reference').open=false;}
-function resetPractice(){celebrations.stop();state=freshState();position=0;single=false;sentenceIndex=0;resetHelp();hideReference();renderClose();renderAll();focusTask();}
+function resetPractice(){celebrations.stop();rewardSound.reset();state=freshState();position=0;single=false;sentenceIndex=0;resetHelp();hideReference();renderClose();renderAll();focusTask();}
 $('lesson').innerHTML=LESSONS.map(item=>`<option value="${e(item.id)}">${e(item.title)}</option>`).join('');
 $('reference-content').textContent=lesson.teacherReference;
 $('lesson').onchange=()=>{if(hasWork()&&!confirm('Change passages and clear this practice? Your answers will be lost.')){$('lesson').value=lesson.id;return;}lesson=LESSONS.find(item=>item.id===$('lesson').value);$('reference-content').textContent=lesson.teacherReference;$('notice').textContent='New passage. Start a fresh practice.';resetPractice();};
@@ -185,7 +186,7 @@ $('mode').onchange=()=>{const nextMode=$('mode').value;
   position=FLOW.findIndex(screen=>screen.stage===current().stage);
   $('notice').textContent='Start a new attempt. Choices, points, and badges are cleared. Your own writing is still here.';
  }else{$('notice').textContent=nextMode==='teacher'?'Teacher demonstration. These are examples, not independent answers.':'Practice mode changed. Hints and examples are hidden.';if(current().key)position=FLOW.findIndex(screen=>screen.key===current().key&&screen.phase==='answer');}
- celebrations.stop();mode=nextMode;resetHelp();hideReference();renderClose();renderAll();focusTask();
+ celebrations.stop();rewardSound.reset();mode=nextMode;resetHelp();hideReference();renderClose();renderAll();focusTask();
 };
 $('teacher-reference').ontoggle=()=>{if($('teacher-reference').open&&mode!=='teacher'){keys.forEach(key=>markRevealed(key,['answer']));renderSettings();}};
 $('clear').onclick=()=>{if(!confirm('Clear this practice? Your answers will be lost.'))return;$('notice').textContent='Practice cleared.';resetPractice();};
