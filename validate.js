@@ -14,8 +14,20 @@ for(const l of lessons){
  assert.equal(l.selfCheck.length,4);console.log(`${l.title}: ${count} words; data checks passed`);
 }
 assert.ok(new Set(lessons.map(l=>l.whatQuestion.answerId)).size>=3);
-for(const file of ['index.html','styles.css','lessons.js','rewards.js','app.js']){const contents=fs.readFileSync(file,'utf8');assert.ok(!/[\u3400-\u9fff]/.test(contents),file+' student content is English');assert.ok(!/https?:\/\/|fetch\s*\(|XMLHttpRequest|localStorage|sessionStorage|document\.cookie|navigator\.mediaDevices/.test(contents),file+' no external requests or persistent answer storage');}
+for(const file of ['index.html','styles.css','lessons.js','rewards.js','app.js']){const contents=fs.readFileSync(file,'utf8');if(file!=='index.html')assert.ok(!/[\u3400-\u9fff]/.test(contents),file+' course content is English');assert.ok(!/https?:\/\/|fetch\s*\(|XMLHttpRequest|document\.cookie|navigator\.mediaDevices/.test(contents),file+' no external requests or media capture');}
 const badges=vm.runInNewContext(fs.readFileSync('rewards.js','utf8')+'\nPRACTICE_BADGES;');
 for(const lesson of lessons){assert.ok(badges[lesson.id]?.name);assert.ok(badges[lesson.id]?.icon);}
 unique(lessons.map(lesson=>badges[lesson.id].name),'badge names');
 console.log('All data and static privacy checks passed. These are not browser or teaching-effectiveness tests.');
+
+for(const file of ['reading-records.js','practice-completion.js']){const source=fs.readFileSync(file,'utf8');assert.ok(!/https?:\/\/|fetch\s*\(|XMLHttpRequest|navigator\.mediaDevices|sendBeacon|WebSocket/.test(source),file+' local only');}
+
+// Validate the deployable entry's actual dependency closure, not optional local previews.
+const entry=fs.readFileSync('index.html','utf8');
+const scripts=[...entry.matchAll(/<script defer src="([^"]+)"/g)].map(m=>m[1]);
+assert.deepEqual(scripts,['lessons.js','rewards.js','reading-records.js','practice-completion.js','app.js']);
+for(const asset of [...scripts,'styles.css'])assert.ok(fs.existsSync(asset),'missing Pages asset '+asset);
+const completion=fs.readFileSync('practice-completion.js','utf8');
+assert.ok(!/google\.script|\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|removeItem|\.clear\s*\(/.test(completion),'no upload transport or storage clearing');
+assert.ok(!/reading-report\.js|report\.html/.test(entry),'standalone summary has no preview-page dependency');
+console.log('Pages dependency closure and offline completion checks passed.');

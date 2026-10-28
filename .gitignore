@@ -66,3 +66,14 @@ student-data.*
 students/
 students.*
 roster.*
+
+# Local cloud project, incident evidence and handoff are outside the Pages release.
+# Ignore rules do not untrack existing files or provide access control.
+/cloud/
+/HANDOFF_STATUS.md
+/examples/
+/backups/
+/backup/
+/reports/
+/exports/
+*.report.json

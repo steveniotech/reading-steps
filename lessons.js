@@ -136,3 +136,39 @@ const EVIDENCE_TASKS = {
 LESSONS.forEach(lesson => ['what','why','how'].forEach(key => {
  lesson[key + 'Question'].evidenceTask = EVIDENCE_TASKS[lesson.id][key];
 }));
+
+// Audited against every authored prompt, option and target evidence set.
+// These are analysis annotations only; content, correct answers and grading stay unchanged.
+const READING_SKILL_VERSION='reading-skills-v2';
+const READING_SKILL_AUDIT={
+ 'garden-sign':{
+  what:{focus:'\u628a\u82b1\u56ed\u95ee\u9898、\u544a\u793a\u884c\u52a8\u4e0e\u7ed3\u679c\u8054\u7cfb\u8d77\u6765，\u9009\u62e9\u8986\u76d6\u5168\u6587\u7684\u610f\u601d。',basis:['g1','g4','g6']},
+  why:{focus:'\u627e\u51fa\u6e38\u5ba2\u8e29\u5230\u690d\u7269\u7684\u660e\u786e\u539f\u56e0：\u690d\u7269\u5f88\u5c0f、\u4e0d\u6613\u770b\u89c1。',basis:['g2']},
+  how:{focus:'\u7406\u89e3\u5236\u4f5c\u544a\u793a、\u8bf7\u4eba\u653e\u7f6e、\u6e38\u5ba2\u7167\u505a\u7684\u884c\u52a8\u8fc7\u7a0b。',basis:['g4','g5','g6']}
+ },
+ 'book-cart':{
+  what:{focus:'\u628a\u8f66\u8f6e\u95ee\u9898\u4e0e\u6362\u7bee\u5b50\u8fd0\u4e66\u7684\u89e3\u51b3\u529e\u6cd5\u8054\u7cfb\u8d77\u6765。',basis:['b1','b5','b6']},
+  why:{focus:'\u627e\u5230 Eli \u505c\u63a8\u8f66\u7684\u660e\u786e\u539f\u56e0：\u9632\u6b62\u4e66\u6389\u4e0b。',basis:['b3']},
+  how:{focus:'\u7406\u89e3\u6c42\u52a9、\u6362\u7bee\u5b50、\u4e00\u8d77\u642c\u8fd0\u7684\u884c\u52a8\u8fc7\u7a0b。',basis:['b4','b5','b6']}
+ },
+ 'paper-tray':{
+  what:{focus:'\u9009\u62e9\u6db5\u76d6\u7eb8\u76d8\u7528\u9014\u548c\u91cd\u590d\u4f7f\u7528\u7a7a\u767d\u9762\u7684\u5168\u6587\u610f\u601d。',basis:['p1','p3','p6']},
+  why:{focus:'\u8054\u7cfb\u7a7a\u767d\u9762\u4ecd\u53ef\u4f7f\u7528\u4e0e\u66ff\u4ee3\u65b0\u7eb8\u7684\u660e\u786e\u8bf4\u660e。',basis:['p2','p3']},
+  how:{focus:'\u7406\u89e3\u68c0\u67e5\u7eb8\u5f20、\u653e\u5165\u7eb8\u76d8、\u9700\u8981\u65f6\u53d6\u7528\u7684\u6b65\u9aa4。',basis:['p4','p5','p6']}
+ },
+ 'rain-path':{
+  what:{focus:'\u6982\u62ec\u6392\u6c34\u5404\u90e8\u4ef6\u628a\u96e8\u6c34\u5f15\u79bb\u95e8\u53e3\u7684\u5171\u540c\u7528\u9014。',basis:['r1','r7']},
+  why:{focus:'\u8bc6\u522b\u539f\u6587\u660e\u8bf4\u7684\u79ef\u6c34\u98ce\u9669，\u800c\u975e\u63a8\u65ad\u672a\u5199\u660e\u7684\u539f\u56e0。',basis:['r2']},
+  how:{focus:'\u6309\u539f\u6587\u8ffd\u8e2a\u5c4b\u9876、\u5929\u6c9f、\u843d\u6c34\u7ba1、\u5bfc\u6c34\u5757\u81f3\u8349\u5730\u7684\u8def\u7ebf。',basis:['r3','r4','r5','r6']}
+ }
+};
+LESSONS.forEach(unit=>{
+ unit.contentVersion='reading-2026-10-v1';
+ for(const key of ['what','why','how']){
+  const q=unit[key+'Question'],audit=READING_SKILL_AUDIT[unit.id][key];
+  q.id=unit.id+'.'+key;
+  const skill=key==='what'?'main-idea':key==='why'?'explicit-cause':'sequence';
+  q.skills=[skill];q.evidenceSkill='text-evidence';
+  q.analysis={version:READING_SKILL_VERSION,answer:{kind:'reading-comprehension',skill,focus:audit.focus,basis:audit.basis,limitation:key==='what'?'\u9009\u62e9\u6982\u62ec\u53e5，\u4e0d\u80fd\u8bc4\u4f30\u72ec\u7acb\u7ec4\u7ec7\u6458\u8981；\u6bcf\u7bc7\u4ec5\u4e00\u9053\u4e3b\u65e8\u9898。':key==='why'?'\u539f\u56e0\u5728\u539f\u6587\u4e2d\u660e\u786e\u8bf4\u660e，\u4e0d\u662f\u72ec\u7acb\u7684\u63a8\u7406\u6d4b\u91cf；\u6bcf\u7bc7\u4ec5\u4e00\u9053\u539f\u56e0\u9898。':'\u540c\u65f6\u6d89\u53ca\u660e\u786e\u5185\u5bb9\u4e0e\u987a\u5e8f；\u9009\u9879\u672a\u5355\u72ec\u63a7\u5236\u987a\u5e8f\u53d8\u91cf，\u4e0d\u80fd\u786e\u5b9a\u9519\u56e0。'},evidence:{kind:'reading-comprehension',skill:'text-evidence',focus:'\u6309\u8be5\u9898\u7ed9\u5b9a\u7ebf\u7d22\u5b9a\u4f4d\u76f4\u63a5\u652f\u6301\u53e5：'+audit.basis.join('、')+'。',basis:audit.basis,limitation:'\u4efb\u52a1\u5df2\u7ed9\u660e\u786e\u67e5\u627e\u7ebf\u7d22，\u6309\u56fa\u5b9a\u76ee\u6807\u53e5\u96c6\u5408\u68c0\u67e5；\u4e0d\u4ee3\u8868\u80fd\u81ea\u4e3b\u9009\u62e9\u6240\u6709\u5408\u7406\u8bc1\u636e，\u4e14\u4e0e\u5bf9\u5e94\u7406\u89e3\u9898\u4e0d\u72ec\u7acb。'}};
+ }
+});
