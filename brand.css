@@ -1,0 +1,358 @@
+/* io TECH brand layer for Reading Steps. Educational layout and reading mechanics stay intact. */
+:root {
+  color-scheme: light;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #12345d;
+  background: #f1f7ff;
+  --brand-blue: #0072ef;
+  --brand-dark-blue: #013a91;
+  --brand-orange: #ff7d01;
+  --brand-green: #00bd6a;
+  --action: #0066da;
+  --action-hover: #0056bb;
+  --ink: #12345d;
+  --muted: #48617d;
+  --paper: #f1f7ff;
+  --white: #ffffff;
+  --border: #d9e6f6;
+  --blue-tint: #e6f1ff;
+  --orange-tint: #fff0de;
+  --green-tint: #e4f8ee;
+  --focus: #013a91;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --radius-card: 22px;
+  --radius-button: 13px;
+  --shadow: 0 5px 18px #12345d09;
+}
+
+body {
+  -webkit-text-size-adjust: 100%;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+h1, h2, h3 {
+  color: var(--brand-dark-blue);
+}
+
+a {
+  color: var(--brand-dark-blue);
+}
+
+button, select, textarea {
+  font: inherit;
+}
+
+button, select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-button);
+  color: var(--ink);
+  background: var(--white);
+  min-height: 44px;
+}
+
+button:hover:not(:disabled) {
+  background: var(--blue-tint);
+}
+
+button:focus-visible, select:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--white);
+}
+
+h1:focus, h2:focus {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+/* Header */
+.lab-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 10px var(--space-3) 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  max-width: 1240px;
+  margin: 0 auto 16px;
+}
+
+.brand {
+  display: block;
+  width: 150px;
+  max-width: 100%;
+  line-height: 0;
+}
+
+.brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--white);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.hub-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: var(--radius-button);
+  background: var(--blue-tint);
+  color: var(--brand-dark-blue);
+  text-decoration: none;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.hub-link:hover {
+  background: #d6e8ff;
+}
+
+.points-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 0;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+#practice-points {
+  background: var(--orange-tint);
+  color: #753900;
+  padding: 8px 14px;
+  border-radius: 24px;
+  white-space: nowrap;
+}
+
+#sound-toggle {
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: var(--radius-button);
+}
+
+/* Cards & containers */
+.settings {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.workspace {
+  align-items: start;
+}
+
+.reading, .task-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow);
+}
+
+.eyebrow {
+  color: var(--muted);
+}
+
+.progress {
+  color: var(--muted);
+}
+
+/* Steps navigation */
+nav button {
+  border-radius: var(--radius-button);
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--ink);
+  min-height: 44px;
+}
+
+nav button:hover:not(:disabled) {
+  background: var(--blue-tint);
+}
+
+nav button[aria-current="step"] {
+  border: 2px solid var(--action);
+  background: var(--blue-tint);
+  color: var(--brand-dark-blue);
+  font-weight: 700;
+}
+
+/* Choices & sentence choices */
+.choice, .sentence-choice {
+  background: #f8fbff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--ink);
+}
+
+.choice:hover, .sentence-choice:hover {
+  background: #edf4fc;
+}
+
+.choice:has(input:checked), .sentence-choice:has(input:checked) {
+  border: 2px solid var(--action);
+  background: var(--blue-tint);
+  color: var(--brand-dark-blue);
+}
+
+#evidence-selection {
+  background: var(--blue-tint);
+  color: var(--brand-dark-blue);
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+}
+
+.answer-context {
+  background: #f8fbff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--ink);
+}
+
+/* Primary action */
+.primary {
+  background: var(--action);
+  color: var(--white);
+  border: 2px solid var(--action);
+  border-radius: var(--radius-button);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--action-hover);
+  border-color: var(--action-hover);
+}
+
+.subtle {
+  color: var(--brand-dark-blue);
+}
+
+.subtle:hover {
+  background: var(--blue-tint);
+  border-radius: 8px;
+}
+
+/* Secondary actions separator */
+.secondary-actions {
+  border-top: 1px solid var(--border);
+}
+
+/* Details and helper panels */
+details details {
+  background: var(--blue-tint);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+textarea {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #f8fbff;
+  color: var(--ink);
+  padding: 12px;
+}
+
+textarea:focus {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Feedback */
+.feedback {
+  color: var(--ink);
+}
+
+.inline-message {
+  color: #753900;
+  background: var(--orange-tint);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ffd8b8;
+}
+
+/* Badges and completion */
+.badge-art {
+  color: var(--action);
+  background: var(--blue-tint);
+  border: 2px solid #b9d5f7;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 15px;
+  background: var(--white);
+  color: var(--brand-dark-blue);
+  border: 2px solid var(--action);
+  padding: 10px 14px;
+  border-radius: var(--radius-button);
+  font-weight: 650;
+  z-index: 1000;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+/* Mobile responsive */
+@media(max-width: 800px) {
+  .lab-header {
+    padding: 10px var(--space-2) 12px;
+    gap: 6px;
+  }
+  .brand {
+    width: 132px;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+    gap: 6px;
+  }
+  .hub-link, #sound-toggle, #practice-points {
+    font-size: 12px;
+    padding: 8px 10px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .task-card {
+    order: 0;
+    position: static;
+  }
+  .reading {
+    order: 1;
+  }
+  .mobile-only {
+    display: block;
+  }
+  nav button {
+    flex: 1 1 100px;
+  }
+}
